@@ -3,4 +3,7 @@
 one:
   email: one@one.org
   password_digest: hashed_password
+two:
+  email: two@one.org
+  password_digest: hashed_password1
 

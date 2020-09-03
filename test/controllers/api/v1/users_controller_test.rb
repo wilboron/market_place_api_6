@@ -28,4 +28,23 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :unprocessable_entity
   end
+
+  test 'should update user' do
+    user_payload = {user: { email: @user.email, password: '123456' }}
+    patch api_v1_user_url(@user), params: user_payload, as: :json
+    assert_response :success
+  end
+
+  test 'should not update user when bad params are send' do
+    user_payload = {user: { email: 'bad_email', password: '123456' }}
+    patch api_v1_user_url(@user), params: user_payload, as: :json
+    assert_response :unprocessable_entity
+  end
+
+  test 'should not update user when email is taken' do
+    other_user = users(:two)
+    user_payload = {user: { email: other_user.email, password: '123456' }}
+    patch api_v1_user_url(@user), params: user_payload, as: :json
+    assert_response :unprocessable_entity
+  end
 end
