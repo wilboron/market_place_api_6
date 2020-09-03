@@ -14,7 +14,7 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should create user' do
-    assert_difference('User.count') do
+    assert_difference('User.count', 1) do
       user_payload = { user: { email: 'test@test.org', password: '123456' } }
       post api_v1_users_url, params: user_payload, as: :json
     end
@@ -46,5 +46,12 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
     user_payload = {user: { email: other_user.email, password: '123456' }}
     patch api_v1_user_url(@user), params: user_payload, as: :json
     assert_response :unprocessable_entity
+  end
+
+  test 'should destroy user' do
+    assert_difference('User.count', -1) do
+      delete api_v1_user_url(@user), as: :json
+    end
+    assert_response :no_content
   end
 end
