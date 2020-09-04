@@ -13,8 +13,14 @@ class Api::V1::TokensControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil json_response['token']
   end
 
-  test 'should not get JWT token' do
+  test 'should not get JWT token when password is wrong' do
     user_params = { user: { email: @user.email, password: 'b@d_pa$$' } }
+    post api_v1_tokens_url, params: user_params, as: :json
+    assert_response :unauthorized
+  end
+
+  test 'should not get JWT token when email is invalid' do
+    user_params = { user: { email: 'bad_email', password: 'b@d_pa$$' } }
     post api_v1_tokens_url, params: user_params, as: :json
     assert_response :unauthorized
   end
