@@ -6,6 +6,7 @@ class Api::V1::UsersController < ApplicationController
     render json: @user
   end
 
+  # GET /users
   def index
     render json: User.all
   end
@@ -21,6 +22,7 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
+  # PATH/PUT /users/1
   def update
     if @user.update(user_params)
       render json: @user, status: :ok
@@ -36,7 +38,7 @@ class Api::V1::UsersController < ApplicationController
 
   private
 
-  # Only allow a trusted parameter 'allowd list' through
+  # Only allow a trusted parameter 'allowed list' through
   def user_params
     params.require(:user).permit(:email, :password)
   end
