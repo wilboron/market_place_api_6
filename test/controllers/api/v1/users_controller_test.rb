@@ -30,28 +30,45 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should update user' do
-    user_payload = {user: { email: @user.email, password: '123456' }}
-    patch api_v1_user_url(@user), params: user_payload, as: :json
+    params = {user: { email: @user.email}}
+    headers = { Authorization: JsonWebToken.encode(user_id: @user.id)}
+    patch api_v1_user_url(@user), params: params, headers: headers, as: :json
     assert_response :success
   end
 
+  test 'should forbid update user' do
+    params = {user: { email: @user.email}}
+    patch api_v1_user_url(@user), params: params, as: :json
+    assert_response :forbidden
+  end
+
   test 'should not update user when bad params are send' do
-    user_payload = {user: { email: 'bad_email', password: '123456' }}
-    patch api_v1_user_url(@user), params: user_payload, as: :json
+    params = {user: { email: 'bad_email'}}
+    headers = { Authorization: JsonWebToken.encode(user_id: @user.id)}
+    patch api_v1_user_url(@user), params: params, headers: headers, as: :json
     assert_response :unprocessable_entity
   end
 
   test 'should not update user when email is taken' do
     other_user = users(:two)
-    user_payload = {user: { email: other_user.email, password: '123456' }}
-    patch api_v1_user_url(@user), params: user_payload, as: :json
+    params = {user: { email: other_user.email}}
+    headers = { Authorization: JsonWebToken.encode(user_id: @user.id)}
+    patch api_v1_user_url(@user), params: params, headers: headers, as: :json
     assert_response :unprocessable_entity
   end
 
   test 'should destroy user' do
     assert_difference('User.count', -1) do
-      delete api_v1_user_url(@user), as: :json
+      headers = { Authorization: JsonWebToken.encode(user_id: @user.id)}
+      delete api_v1_user_url(@user), headers: headers, as: :json
     end
     assert_response :no_content
+  end
+
+  test 'should forbid destroy user' do
+    assert_no_difference('User.count') do
+      delete api_v1_user_url(@user), headers: headers, as: :json
+    end
+    assert_response :forbidden
   end
 end
