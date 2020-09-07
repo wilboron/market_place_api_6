@@ -1,7 +1,10 @@
 class Order < ApplicationRecord
+  include ActiveModel::Validations
+
   before_validation :set_total!
   belongs_to :user
   validates :user, presence: true
+  validates_with EnoughProductsValidator
 
   has_many :placements, dependent: :destroy
   has_many :products, through: :placements
