@@ -10,7 +10,7 @@ class Order < ApplicationRecord
   has_many :products, through: :placements
 
   def set_total!
-    self.total = products.sum(&:price)
+    self.total = placements.inject(0) { |sum, p| sum + (p.product.price * p.quantity) }
   end
 
   def build_placements_with_product_ids_and_quantities(product_ids_and_quantities)
