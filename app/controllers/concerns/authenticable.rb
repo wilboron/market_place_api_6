@@ -9,4 +9,14 @@ module Authenticable
 
     @current_user = User.find_by_id(decoded[:user_id])
   end
+
+  def check_auth
+    current_user
+  rescue JWT::JWKError, JWT::DecodeError, JWT::ExpiredSign
+    head(:unauthorized)
+  end
+
+  def check_login
+    current_user || head(:forbidden)
+  end
 end
