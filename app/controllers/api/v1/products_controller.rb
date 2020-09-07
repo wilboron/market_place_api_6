@@ -4,7 +4,7 @@ class Api::V1::ProductsController < ApplicationController
   before_action :check_owner, only: %i[update destroy]
 
   def show
-    render json: serialize(@product)
+    render json: serialize(@product, include_user: true)
   end
 
   def index
@@ -47,7 +47,11 @@ class Api::V1::ProductsController < ApplicationController
     params.require(:product).permit(:title, :price, :published)
   end
 
-  def serialize(product)
-    ProductSerializer.new(product).serializable_hash
+  def serialize(product, include_user: false)
+    if include_user
+      ProductSerializer.new(product, include: [:user]).serializable_hash
+    else
+      ProductSerializer.new(product).serializable_hash
+    end
   end
 end
