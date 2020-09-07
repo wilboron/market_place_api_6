@@ -10,7 +10,7 @@ class Api::V1::ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     json_response =  JSON.parse(self.response.body)
-    assert_equal @product.title, json_response['title']
+    assert_equal @product.title, json_response['data']['attributes']['title']
   end
 
   test 'should show products' do
@@ -24,7 +24,7 @@ class Api::V1::ProductsControllerTest < ActionDispatch::IntegrationTest
                             price: @product.price,
                             published: @product.published } }
       headers = { Authorization: JsonWebToken.encode(user_id: @product.user_id) }
-      post api_v1_products_url, params: params, headers:  headers, as: :json
+      post api_v1_products_url, params: params, headers: headers, as: :json
     end
     assert_response :created
   end
