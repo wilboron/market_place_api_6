@@ -8,7 +8,7 @@ class Api::V1::ProductsController < ApplicationController
   end
 
   def index
-    render json: serialize(Product.all)
+    render json: serialize(Product.search(params))
   end
 
   def create
