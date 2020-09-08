@@ -8,10 +8,10 @@
 Product.delete_all
 User.delete_all
 
-3.times do
+10.times do
   user = User.create! email: Faker::Internet.email, password: 'locadex1234'
   puts "Created a new user: #{user.email}"
-  2.times do
+  50.times do
     product = Product.create!(
       title: Faker::Commerce.product_name,
       price: rand(1.0..100.0),

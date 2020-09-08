@@ -1,4 +1,5 @@
 class Api::V1::ProductsController < ApplicationController
+  include Paginable
   before_action :set_product, only: %i[show update destroy]
   before_action :check_login, only: %i[create update destroy]
   before_action :check_owner, only: %i[update destroy]
@@ -8,7 +9,19 @@ class Api::V1::ProductsController < ApplicationController
   end
 
   def index
-    render json: serialize(Product.search(params))
+    @products = Product.page(current_page)
+                       .per(per_page)
+                       .search(params)
+
+    options = {
+      links: {
+        first: api_v1_products_path(page: 1),
+        last: api_v1_products_path(page: @products.total_pages),
+        prev: api_v1_products_path(page: @products.prev_page),
+        next: api_v1_products_path(page: @products.next_page)
+      }
+    }
+    render json: serialize(@products, options: options)
   end
 
   def create
@@ -47,11 +60,11 @@ class Api::V1::ProductsController < ApplicationController
     params.require(:product).permit(:title, :price, :published)
   end
 
-  def serialize(product, include_user: false)
+  def serialize(product, include_user: false, options: {})
     if include_user
       ProductSerializer.new(product, include: [:user]).serializable_hash
     else
-      ProductSerializer.new(product).serializable_hash
+      ProductSerializer.new(product, options).serializable_hash
     end
   end
 end
