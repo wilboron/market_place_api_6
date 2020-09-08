@@ -1,8 +1,13 @@
 class Api::V1::OrdersController < ApplicationController
+  include Paginable
   before_action :check_login, only: %i[index show create]
 
   def index
-    render json: OrderSerializer.new(current_user.orders).serializable_hash
+    @order = current_user.orders
+                         .page(current_page)
+                         .per(per_page)
+    options = links_serializer_options('api_v1_orders_path', @order)
+    render json: OrderSerializer.new(current_user.orders, options).serializable_hash
   end
 
   def show
